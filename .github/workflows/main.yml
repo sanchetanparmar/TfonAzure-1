@@ -39,9 +39,9 @@ jobs:
         dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/Source/Tailwind.Traders.Web
  
     - name: Run Azure webapp deploy action
-      uses: azure/webapps-deploy@v1
+      uses: azure/webapps-deploy@v2
       with: 
-        app-name: ${{ secrets.WEBAPP_APPSERVICE_NAME }}
+        app-name: 'example-app-service-hftt46hs'
         package: ${{env.DOTNET_ROOT}}/Source/Tailwind.Traders.Web
 
     - name: Azure logout
