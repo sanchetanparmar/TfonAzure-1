@@ -1,4 +1,4 @@
-name: AppService deployments AZ CLI
+name: Build and deploy ASP.Net Core app to Azure Web App - example-app-service-hftt46hs
 
 on:
   push:
@@ -7,14 +7,13 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
+    runs-on: windows-latest
 
+    steps:
     - uses: actions/checkout@master
       with: 
         repository: sanchetanparmar/TailwindTraders-Website
 
- 
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
@@ -23,22 +22,21 @@ jobs:
       working-directory: Source/Tailwind.Traders.Web/ClientApp
       run: npm install
 
-    - name: Setup .NET Core
+    - name: Set up .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 2.1.400
-    - name: Build with dotnet
-      working-directory: Source/Tailwind.Traders.Web
-      run: dotnet build --configuration Release
-    - name: dotnet publish
-      working-directory: Source/Tailwind.Traders.Web
-      run: |
-        dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/Source/Tailwind.Traders.Web
- 
-    - name: Run Azure webapp deploy action
-      uses: azure/webapps-deploy@v2
-      with: 
-        app-name: 'example-app-service-hftt46hs'
-        package: ${{env.DOTNET_ROOT}}/Source/Tailwind.Traders.Web
-        publish-profile: ${{ secrets.azureWebAppPublishProfile }}
+        dotnet-version: '3.1.102'
 
+    - name: Build with dotnet
+      run: dotnet build --configuration Release
+
+    - name: dotnet publish
+      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v1
+      with:
+        app-name: 'example-app-service-hftt46hs'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_c893002144e943f897ada5241217829a }}
+        package: ${{env.DOTNET_ROOT}}/myapp
